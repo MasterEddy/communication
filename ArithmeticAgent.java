@@ -11,23 +11,23 @@ public class ArithmeticAgent implements Steppable {
 	public ArithmeticAgent(){	
 	}
 
-	//Jeder ArithmeticAgent verfügt über eine solve()-Funktion, 
-	//mit der er Rechenaufgaben eines spezifischen Typs lösen kann.
+	//Jeder ArithmeticAgent verfï¿½gt ï¿½ber eine solve()-Funktion, 
+	//mit der er Rechenaufgaben eines spezifischen Typs lï¿½sen kann.
 	//Diese Funktion soll bei den Rechenagenten, 
-	//die von ArithmeticAgent erben überschrieben werden!
+	//die von ArithmeticAgent erben ï¿½berschrieben werden!
 	private int solve(int a, int b){
 		return 0;
 	}
 
-	//Bei jedem Step prüft jeder Rechenagent, ob neue Nachrichten verfügbar sind.
-	//Falls dies der Fall ist, so lange immer eine Nachricht abgerufen, bis keine mehr verfügbar sind.
+	//Bei jedem Step prï¿½ft jeder Rechenagent, ob neue Nachrichten verfï¿½gbar sind.
+	//Falls dies der Fall ist, so lange immer eine Nachricht abgerufen, bis keine mehr verfï¿½gbar sind.
 	public void step(SimState state) {
 		
 		while( messageCenter.messagesAvailable(this.hashCode()) ){
 			
 			FIPA_Message tmpMsg = messageCenter.getMessage(this.hashCode());
 			
-			//TODO: Hier muss der Inhalt der Nachricht überprüft werden und entsprechend reagiert werden!
+			//TODO: Hier muss der Inhalt der Nachricht ï¿½berprï¿½ft werden und entsprechend reagiert werden!
 			
 			System.out.println("[MESSAGE] "+ this.hashCode() +" received a message " + tmpMsg.getContent() + 
 					" from " + tmpMsg.getSender());
@@ -44,5 +44,9 @@ public class ArithmeticAgent implements Steppable {
 	
 	public void setYellowPages(YellowPages yellowPages) {
 		this.yellowPages = yellowPages;
+	}
+	
+	public boolean stillOnline() {
+		return true;
 	}
 }

@@ -9,21 +9,21 @@ public class YellowPages implements Steppable{
 
 	ArrayList<AgentService> agentList;
 	
-	//Die YellowPages dienen als Nachschlagewerk für Services.
-	//Agenten können hier ihren Service hinterlegen, um ihn anzubieten oder
+	//Die YellowPages dienen als Nachschlagewerk fÃ¼r Services.
+	//Agenten kÃ¶nnen hier ihren Service hinterlegen, um ihn anzubieten oder
 	//andere Agenten finden, welche einen bestimmten Service anbieten.
 	
 	public YellowPages(){
 		this.agentList = new ArrayList<AgentService>();
 	}
 	
-	//Über die register()-Funktion kann ein Agent einen (oder auch mehrere) Services anmelden.	
+	//Ãœber die register()-Funktion kann ein Agent einen (oder auch mehrere) Services anmelden.	
 	public void register(ArithmeticAgent agent, String service){
 		agentList.add(new AgentService(agent, service));
 		System.out.println("[YellowPages] Agent " + agent.hashCode() + " with service " + service + " registered successfully!");
 	}
 	
-	//Agenten können ihren Service auch wieder abmelden.
+	//Agenten kÃ¶nnen ihren Service auch wieder abmelden.
 	public void unregister(ArithmeticAgent agent){
 		for(AgentService agentService: this.agentList){
 			if( agentService.getAgent().hashCode() == agent.hashCode() ){
@@ -33,7 +33,7 @@ public class YellowPages implements Steppable{
 		}
 	}
 	
-	//Zu einem bestimmten Service können alle Agenten abgefragt werden, die diesen anbieten.
+	//Zu einem bestimmten Service kÃ¶nnen alle Agenten abgefragt werden, die diesen anbieten.
 	public ArrayList<ArithmeticAgent> getAgents(String service){
 		ArrayList<ArithmeticAgent> tmp = new ArrayList<ArithmeticAgent>();
 		
@@ -45,7 +45,7 @@ public class YellowPages implements Steppable{
 		return tmp;
 	}
 	
-	//Hilfsklasse, um die Tupel <Agent, Service> abspeichern zu können.
+	//Hilfsklasse, um die Tupel <Agent, Service> abspeichern zu kï¿½nnen.
 	public class AgentService{
 		private ArithmeticAgent agent;
 		private String service; 
@@ -67,5 +67,12 @@ public class YellowPages implements Steppable{
 	public void step(SimState state) {
 		//TODO: Hier muss das Ping-Pong-Verhalten implementiert werden.
 		
+		for (AgentService as : agentList) {
+			ArithmeticAgent arithmeticAgent = as.getAgent();
+			if (!arithmeticAgent.stillOnline()) {
+				System.out.println("[YellowPages] Service has been suspended: " + arithmeticAgent.hashCode());
+				unregister(arithmeticAgent);
+			}
+		}
 	}
 }
