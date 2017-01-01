@@ -50,6 +50,20 @@ public class Communication extends SimState {
 		ma2.registerService("multiplication");
 		schedule.scheduleRepeating(ma2);
 
+		//Register SubtractionAgent
+		SubtractionAgent sa1 = new SubtractionAgent();
+		sa1.setMessageCenter(messageCenter);
+		sa1.setYellowPages(yellowPages);
+		sa1.registerService("subtraction");
+		schedule.scheduleRepeating(sa1);
+		
+		//Register AdditionAgent
+		AdditionAgent aa1 = new AdditionAgent();
+		aa1.setMessageCenter(messageCenter);
+		aa1.setYellowPages(yellowPages);
+		aa1.registerService("addition");
+		schedule.scheduleRepeating(aa1);
+		
 		//Agent(en), die eine Aufgabe erhalten und diese 
 		//um sie zu lösen zerteilen und weiterleiten
 		ConsumerAgent ca = new ConsumerAgent();
