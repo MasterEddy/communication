@@ -1,6 +1,8 @@
 package sim.app.communication;
 
 import java.util.ArrayList;
+import java.util.Random;
+
 import javax.swing.JOptionPane;
 
 import sim.engine.SimState;
@@ -16,6 +18,7 @@ public class ConsumerAgent implements Steppable{
 	FIPA_Message tmpMsg;
 	private int [] multi;
 	private int blockVar;
+	private Random random = new Random();
 	
 	private int indexoflastOperator;
 	private int indexoflastOperatorA;
@@ -24,8 +27,15 @@ public class ConsumerAgent implements Steppable{
 	ArrayList<ArithmeticAgent> agentListm;
 	
 	//Dieser Agent soll vom Nutzer eine Rechenaufgabe abfragen, 
-	//diese anschließend zerlegen und die Teilaufgaben an 
+	//diese anschlieï¿½end zerlegen und die Teilaufgaben an 
 	//die entsprechenden Rechenagenten weiterleiten.
+	
+	public ConsumerAgent(){
+		//First we ask for something to solve. 
+		therm = JOptionPane.showInputDialog("Geben Sie hier ihren Therm ein. (Bitte nur '*','+','-' als Operatoren und einstellige Werte nutzen..)");
+		//Afterwards, we split the Sting into smallest pieces.
+		thermArr = therm.split("");
+	}
 	
 	public int[] searchForMultiplication(){
 		String searchm = "*";
@@ -137,14 +147,8 @@ public class ConsumerAgent implements Steppable{
 	}
 	
 	//Hierzu fragt er jedes mal, bevor er eine Teilaufgabe versendet bei 
-	//den YellowPages nach, welche Rechenagenten zur verfügung stehen.
+	//den YellowPages nach, welche Rechenagenten zur verfï¿½gung stehen.
 	
-	public ConsumerAgent(){
-		//First we ask for something to solve. 
-		therm = JOptionPane.showInputDialog("Geben Sie hier ihren Therm ein. (Bitte nur '*','+','-' als Operatoren und einstellige Werte nutzen..)");
-		//Afterwards, we split the Sting into smallest pieces.
-		thermArr = therm.split("");
-	}
 
 	public void step(SimState state) {
 		
@@ -156,8 +160,8 @@ public class ConsumerAgent implements Steppable{
 		}
 
 		//Beispielhafte Abfrage eines Rechenagenten, der multiplizieren kann.
-		//Zurückgegeben werden alle potenziellen Rechenagenten in einer ArrayList.
-		//Es soll dann zufällig ein Rechenagent ausgewählt werden.
+		//Zurï¿½ckgegeben werden alle potenziellen Rechenagenten in einer ArrayList.
+		//Es soll dann zufï¿½llig ein Rechenagent ausgewï¿½hlt werden.
 		agentListm = this.yellowPages.getAgents("multiplication");
 		ArrayList<ArithmeticAgent> agentListAS = this.yellowPages.getAgents("addition");
 		ArrayList<ArithmeticAgent> agentListS = this.yellowPages.getAgents("subtraction");
@@ -213,10 +217,12 @@ public class ConsumerAgent implements Steppable{
 			multi = searchForMultiplication();
 			//If the called method gives us other numbers than "0" we send a request to an multiplication agent.
 			if (multi[0] != 0 && multi[1] != 0){
-				//ATM we are always sending our requests to the same multiplication Agent --> TODO: IMPLEMENT COINCIDENCE
 				if(agentListm.size() > 0){
-					//Send a REquest to a serviceagent and save, that there is an open request.
-					messageCenter.send( this.hashCode(), agentListm.get(0).hashCode(), FIPA_Performative.REQUEST, /*System.nanoTime()+*/"multiplication");
+					// Choose a random agent
+					Integer randomInt = random.nextInt(agentListm.size());
+					
+					//Send a request to a serviceagent and save, that there is an open request.
+					messageCenter.send( this.hashCode(), agentListm.get(randomInt).hashCode(), FIPA_Performative.REQUEST, /*System.nanoTime()+*/"multiplication");
 					blockVar = 1;
 				} else {
 					System.out.println("There is no registered multiplication-agent!");
@@ -229,8 +235,12 @@ public class ConsumerAgent implements Steppable{
 					//An addition has to be executed before a subtraction task.
 					if(agentListA.size() > 0){
 						multi = searchForAddition();
+						
+						// Choose a random agent
+						Integer randomInt = random.nextInt(agentListA.size());
+						
 						//Send a request to a serviceagent and save, that there is an open request.
-						messageCenter.send( this.hashCode(), agentListA.get(0).hashCode(), FIPA_Performative.REQUEST, /*System.nanoTime()+*/"addition");
+						messageCenter.send( this.hashCode(), agentListA.get(randomInt).hashCode(), FIPA_Performative.REQUEST, /*System.nanoTime()+*/"addition");
 						blockVar = 1;
 					} else {
 						System.out.println("There is no registered addition-agent!");
@@ -239,8 +249,12 @@ public class ConsumerAgent implements Steppable{
 					//Subtraction task is first one to be executed
 					multi = searchForSubtraction();
 					if(agentListS.size() > 0){
+						
+						// Choose a random agent
+						Integer randomInt = random.nextInt(agentListS.size());
+						
 						//Send a REquest to a serviceagent and save, that there is an open request.
-						messageCenter.send( this.hashCode(), agentListS.get(0).hashCode(), FIPA_Performative.REQUEST, /*System.nanoTime()+*/"subtraction");
+						messageCenter.send( this.hashCode(), agentListS.get(randomInt).hashCode(), FIPA_Performative.REQUEST, /*System.nanoTime()+*/"subtraction");
 						blockVar = 1;
 					} else {
 							System.out.println("There is no registered subtraction-agent!");
@@ -256,7 +270,7 @@ public class ConsumerAgent implements Steppable{
 			
 		//Beispiel, wie eine Nachricht verschickt werden kann.
 		//messageCenter.send(int sender, int receiver, FIPA_Performative performative, String content)
-		//Achtung: Sender und Empfänger werden durch den hashCode() angeben, einen 
+		//Achtung: Sender und Empfï¿½nger werden durch den hashCode() angeben, einen 
 		//messageCenter.send( this.hashCode(), agentList.get(0).hashCode(), FIPA_Performative.INFORM, System.nanoTime()+"");
 		//messageCenter.send( this.hashCode(), agentList.get(1).hashCode(), FIPA_Performative.INFORM, System.nanoTime()+"");
 	public void setYellowPages(YellowPages yp) {

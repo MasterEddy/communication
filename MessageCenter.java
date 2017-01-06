@@ -18,7 +18,7 @@ public class MessageCenter {
 		this.messageList.add(message);
 	}
 	
-	//Prüft, ob noch eine Nachricht verfügbar ist.
+	//Prï¿½ft, ob noch eine Nachricht verfï¿½gbar ist.
 	public boolean messagesAvailable(int receiver){
 		for(FIPA_Message message: this.messageList){		
 			if( message.getReceiver() == receiver ){

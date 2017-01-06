@@ -8,7 +8,7 @@ public class FIPA_Message {
 	private String content;
 	
 	//Eine Nachricht besteht aus den folgenden 4 Parametern: 
-	//Sender, Empf‰nger, einem FIPA-Performative und einem Nachrichteninhalt.
+	//Sender, Empf√§nger, einem FIPA-Performative und einem Nachrichteninhalt.
 	
 	public FIPA_Message( int sender, int receiver, FIPA_Performative performative, String content ){
 		this.setPerformative( performative );
