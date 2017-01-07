@@ -42,7 +42,7 @@ public class ArithmeticAgent implements Steppable {
 		if (tmpMsg != null && tmpMsg.getPerformative().equals(req)){
 			if (tmpMsg.getContent() == service){
 				//TODO: Antwortformat herausfinden
-				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.CONFIRM,">>It's alright. I can do it.<<");
+				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.CONFIRM,"It's alright. I can do it.");
 			}
 		}
 		//Check, if our tmpMsg uses the FIPA-performative "INFORM" --> means, we get our task
@@ -58,7 +58,7 @@ public class ArithmeticAgent implements Steppable {
 			int b = Integer.parseInt(result[1]);
 			int solved = solve(a, b);
 			//SOLVED! Send the number back!!
-			messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.INFORM, ">>" + solved + "<<");
+			messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.INFORM, ""+solved);
 			// Reset tmpMsg so we don't get another answer in the next step
 			tmpMsg = null;
 		}
