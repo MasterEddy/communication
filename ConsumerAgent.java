@@ -30,7 +30,7 @@ public class ConsumerAgent implements Steppable{
 	private int indexoflastOperatorS;
 	private String lastOperation = null;
 	private int currentOperator;
-	private boolean writeBlock = false;
+	private boolean writeBlock;
 	
 //	private int indexOfOperator;
 	private int resultOfCompleteCalculation = 0;
@@ -45,7 +45,7 @@ public class ConsumerAgent implements Steppable{
 	
 	public ConsumerAgent(){
 		//First we ask for something to solve. 
-		therm = JOptionPane.showInputDialog("Geben Sie hier ihren Therm ein. (Bitte nur '*','+','-' als Operatoren und einstellige Werte nutzen..)");
+		therm = JOptionPane.showInputDialog("Geben Sie hier ihren Therm ein. (Bitte nur '*','+','-' als Operatoren nutzen.)");
 		//Afterwards, we split the Sting into smallest pieces.
 		thermArr = therm.split("");
 		
@@ -59,31 +59,9 @@ public class ConsumerAgent implements Steppable{
 				countOperators++;
 			}
 		}
+		
+		writeBlock = false;
 	}
-	
-//	public void extractCalculations() {
-//
-//		int operand1 = 0;
-//		int operand2 = 0;
-//		
-//		// First, we check for multiplication in our given term and send it to one of our agents
-//		for (int i = 0; i < split.length; i++) {
-//			if (split[i] == "*") {
-//				// Multiplikationsaufgabe gefunden! Nun holen wir die Operanden
-//				operand1 = Integer.parseInt(split[i - 1]);
-//				operand2 = Integer.parseInt(split[i + 1]);
-//				if(agentListm.size() > 0){
-//					// Choose a random multiplication agent
-//					Integer randomInt = random.nextInt(agentListm.size());
-//					messageCenter.send(this.hashCode(), randomInt, FIPA_Performative.REQUEST, Integer.toString(operand1) + "." + Integer.toString(operand2));
-//				}
-//				indexOfOperator = i;
-//			}
-//		}
-//		
-//		
-//		calcDone = true;
-//	}
 
 	
 	public int[] searchForMultiplication(){
@@ -254,10 +232,11 @@ public class ConsumerAgent implements Steppable{
 		if (blockVar == 2 && writeBlock){
 
 			//Check, if the used performative of the message is an INFORM (that means, we get our results)
-			if (tmpMsg.getPerformative().equals(FIPA_Performative.AGREE.toString())){
+			if (tmpMsg != null && tmpMsg.getPerformative().equals(FIPA_Performative.AGREE.toString())){
 				
 				//Now that we assume, that the message-content is our result, we start analyzing the content.
 				String result = tmpMsg.getContent();
+				
 				
 				searchForAddition();
 				searchForSubtraction();
@@ -278,9 +257,10 @@ public class ConsumerAgent implements Steppable{
 				
 				//We overwrite the spot of the last operator, so we could get an Array-structure like: {1,*,3,15,5}
 				split[currentOperator] = result;
-				//System.out.println("Inserted result +++ " + Arrays.toString(split));
+//				System.out.println("Inserted result +++ " + Arrays.toString(split));
 				writeBlock = false;
-			
+				tmpMsg = null;
+				
 //				We want to send new requests or tasks, so we have to unblock the if functions
 				blockVar = 0;
 			}	
@@ -314,10 +294,11 @@ public class ConsumerAgent implements Steppable{
 			multi = searchForMultiplication();
 			
 			//If the called method gives us other numbers than "0" we send a request to an multiplication agent.
-			if (multi[0] != 0 && multi[1] != 0 && split[indexoflastOperator].equals("*") == true && writeBlock == false){
+			
+			if (indexoflastOperator < split.length && split[indexoflastOperator].equals("*") == true && writeBlock == false){
 				if(agentListm.size() > 0){
 					
-					//System.out.println("Sending multi request");
+//					System.out.println("Sending multi request");
 					//Send a request to a serviceagent and save, that there is an open request.
 					int randomAgent = random.nextInt(agentListm.size());
 //					System.out.println("Multi Agent: " + randomAgent);
@@ -345,7 +326,7 @@ public class ConsumerAgent implements Steppable{
 					//An addition has to be executed before a subtraction task.
 					if(agentListA.size() > 0){
 						multi = searchForAddition();
-						//System.out.println("Sending addition request");
+//						System.out.println("Sending addition request");
 						//Send a request to a serviceagent and save, that there is an open request.
 						int randomAgent = random.nextInt(agentListA.size());
 //						System.out.println("Add Agent: " + randomAgent);
@@ -360,7 +341,7 @@ public class ConsumerAgent implements Steppable{
 				} else if (indexoflastOperatorS < indexoflastOperatorA && writeBlock == false){
 					//Subtraction task is first one to be executed
 					if(agentListS.size() > 0){
-						//System.out.println("Sending substraction request");
+//						System.out.println("Sending substraction request");
 						multi = searchForSubtraction();
 						//Send a REquest to a serviceagent and save, that there is an open request.
 						int randomAgent = random.nextInt(agentListS.size());		
@@ -388,7 +369,7 @@ public class ConsumerAgent implements Steppable{
 				indexoflastOperatorS = 2147483647;
 		}
 		
-		System.out.println("This step's round array is: " + Arrays.toString(split));
+//		System.out.println("This step's round array is: " + Arrays.toString(split));
 //		if (messageCenter.messageList.isEmpty()) {
 //			System.exit(0);
 //		}

@@ -62,7 +62,7 @@ public class ArithmeticAgent implements Steppable {
 			
 			// Save operator
 			String operator = toSolveArray[1];
-			System.out.println("Operator: " + operator);
+//			System.out.println("Operator: " + operator);
 			
 			// Split our given numbers from the operator
 			String[] result = toSolve.split("\\p{Punct}");
