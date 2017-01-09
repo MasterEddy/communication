@@ -3,11 +3,11 @@ package sim.app.communication;
 public enum FIPA_Performative {
 	
 	//Bei "enum" handelt es sich um einen Datentypen, 
-	//mit dem Konstanten definiert werden können.
+	//mit dem Konstanten definiert werden kï¿½nnen.
 	
-	//Diese können anschließend mit "FIPA_Performative.NAME" aufgerufen werden.
+	//Diese kï¿½nnen anschlieï¿½end mit "FIPA_Performative.NAME" aufgerufen werden.
 	
-	//@TODO: Ergänzen Sie die fehlenden Performatives.
+	//@TODO: Ergï¿½nzen Sie die fehlenden Performatives.
 	
-	INFORM, REQUEST, CONFIRM, REFUSE, AGREE
+	INFORM, REQUEST, CONFIRM, REFUSE, AGREE, NOT_UNDERSTOOD
 }

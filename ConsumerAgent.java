@@ -280,52 +280,32 @@ public class ConsumerAgent implements Steppable{
 				split[currentOperator] = result;
 				//System.out.println("Inserted result +++ " + Arrays.toString(split));
 				writeBlock = false;
-				
-//				
-//				//Because our therm in the Array is absolute nonsense, we have to set all numbers to zero, which are right of our result. 
-//				int in = currentOperator + 1;
-//				while (in < split.length){
-//					if (split[in] != "0"){
-//						split[in] = "0";
-//						break;
-//					}
-//					in++;
-//				}
-//				
-//				//Because our therm in the Array is absolute nonsense, we have to set all numbers to zero, which are right of our result.
-//				in = currentOperator - 1;
-//				while (in >= 0){
-//					if (split[in] != "0"){
-//						split[in] = "0";
-//						break;
-//					}
-//					in--;
-//				}
+			
 //				We want to send new requests or tasks, so we have to unblock the if functions
 				blockVar = 0;
 			}	
 		}
 
-		//If there is an open request, we check if our tmpMsg uses the performative Confirm, which means, that we can send our task to our arithmetic agent.
-		if (blockVar == 1 && writeBlock){
-			//if our tmpMsg uses the FIPA-performative "CONFIRM", then send the task to the sender.
-			String conf = "CONFIRM";
-			if (tmpMsg != null && tmpMsg.getPerformative().equals(conf)){
-				
-				// Check if we get a negative intermediate result with a substraction
-				if (lastOperation.equals("sub")) {
-					if (multi[1] > multi[0]) {
-						System.out.println("### NEGATIVE RESULT IN SUBSTRACTION. SYSTEM QUITTING. ###");
-						System.out.println("### ONLY ENTER TERMS WITHOUT NEGATIVE INTERMEDIATE RESULTS ###");
-						System.exit(0);
-					}
-				}
-				
-				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.INFORM,""+ multi[0] + "." + multi[1]);
-				
-				blockVar = 2;
-			}
-		}
+//		//If there is an open request, we check if our tmpMsg uses the performative Confirm, which means, that we can send our task to our arithmetic agent.
+//		if (blockVar == 1 && writeBlock){
+//			//if our tmpMsg uses the FIPA-performative "CONFIRM", then send the task to the sender.
+//			String conf = "CONFIRM";
+//			if (tmpMsg != null && tmpMsg.getPerformative().equals(conf)){
+//				
+//				// Check if we get a negative intermediate result with a substraction
+//				if (lastOperation.equals("sub")) {
+//					if (multi[1] > multi[0]) {
+//						System.out.println("### NEGATIVE RESULT IN SUBSTRACTION. SYSTEM QUITTING. ###");
+//						System.out.println("### ONLY ENTER TERMS WITHOUT NEGATIVE INTERMEDIATE RESULTS ###");
+//						System.exit(0);
+//					}
+//				}
+//				
+//				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.INFORM,""+ multi[0] + "." + multi[1]);
+//				
+//				blockVar = 2;
+//			}
+//		}
 		
 		//If there is no open request, we try to build up a new one
 		if (blockVar == 0 && !writeBlock){
@@ -334,15 +314,15 @@ public class ConsumerAgent implements Steppable{
 			multi = searchForMultiplication();
 			
 			//If the called method gives us other numbers than "0" we send a request to an multiplication agent.
-			if (multi[0] != 0 && multi[1] != 0 && split[indexoflastOperator].equals("*") == true && !writeBlock){
+			if (multi[0] != 0 && multi[1] != 0 && split[indexoflastOperator].equals("*") == true && writeBlock == false){
 				if(agentListm.size() > 0){
 					
 					//System.out.println("Sending multi request");
 					//Send a request to a serviceagent and save, that there is an open request.
 					int randomAgent = random.nextInt(agentListm.size());
 //					System.out.println("Multi Agent: " + randomAgent);
-					messageCenter.send( this.hashCode(), agentListm.get(randomAgent).hashCode(), FIPA_Performative.REQUEST, /*System.nanoTime()+*/"multiplication");
-					blockVar = 1;
+					messageCenter.send(this.hashCode(), agentListm.get(randomAgent).hashCode(), FIPA_Performative.REQUEST,""+ multi[0] + "*" + multi[1]);
+					blockVar = 2;
 					lastOperation = "multi";
 					cleanArray(indexoflastOperator);
 					writeBlock = true;
@@ -361,7 +341,7 @@ public class ConsumerAgent implements Steppable{
 					indexoflastOperatorS = 99;
 				}
 				//First we look for possible tasks. Then we check, which is the first to execute (left before right rule)
-				if (indexoflastOperatorA < indexoflastOperatorS){
+				if (indexoflastOperatorA < indexoflastOperatorS && writeBlock == false){
 					//An addition has to be executed before a subtraction task.
 					if(agentListA.size() > 0){
 						multi = searchForAddition();
@@ -369,24 +349,31 @@ public class ConsumerAgent implements Steppable{
 						//Send a request to a serviceagent and save, that there is an open request.
 						int randomAgent = random.nextInt(agentListA.size());
 //						System.out.println("Add Agent: " + randomAgent);
-						messageCenter.send( this.hashCode(), agentListA.get(randomAgent).hashCode(), FIPA_Performative.REQUEST, /*System.nanoTime()+*/"addition");
-						blockVar = 1;
+						messageCenter.send(this.hashCode(), agentListA.get(randomAgent).hashCode(), FIPA_Performative.REQUEST,""+ multi[0] + "+" + multi[1]);
+						blockVar = 2;
 						lastOperation = "add";
 						cleanArray(indexoflastOperatorA);
 						writeBlock = true;
 					} else {
 						System.out.println("There is no registered addition-agent!");
 					}
-				} else if (indexoflastOperatorS < indexoflastOperatorA){
+				} else if (indexoflastOperatorS < indexoflastOperatorA && writeBlock == false){
 					//Subtraction task is first one to be executed
 					if(agentListS.size() > 0){
 						//System.out.println("Sending substraction request");
 						multi = searchForSubtraction();
 						//Send a REquest to a serviceagent and save, that there is an open request.
-						int randomAgent = random.nextInt(agentListS.size());
-//						System.out.println("Sub Agent: " + randomAgent);
-						messageCenter.send( this.hashCode(), agentListS.get(randomAgent).hashCode(), FIPA_Performative.REQUEST, /*System.nanoTime()+*/"subtraction");
-						blockVar = 1;
+						int randomAgent = random.nextInt(agentListS.size());		
+
+						// Check if we get a negative intermediate result with a substraction
+							if (multi[1] > multi[0]) {
+								System.out.println("### NEGATIVE RESULT IN SUBSTRACTION. SYSTEM QUITTING. ###");
+								System.out.println("### ONLY ENTER TERMS WITHOUT NEGATIVE INTERMEDIATE RESULTS ###");
+								System.exit(0);
+							}
+						
+						messageCenter.send(this.hashCode(), agentListS.get(randomAgent).hashCode(), FIPA_Performative.REQUEST,""+ multi[0] + "-" + multi[1]);
+						blockVar = 2;
 						lastOperation = "sub";
 						cleanArray(indexoflastOperatorS);
 						writeBlock = true;
@@ -401,7 +388,7 @@ public class ConsumerAgent implements Steppable{
 				indexoflastOperatorS = 2147483647;
 		}
 		
-		//System.out.println("This step's round array is: " + Arrays.toString(split));
+		System.out.println("This step's round array is: " + Arrays.toString(split));
 //		if (messageCenter.messageList.isEmpty()) {
 //			System.exit(0);
 //		}

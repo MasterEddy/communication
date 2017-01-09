@@ -39,31 +39,78 @@ public class ArithmeticAgent implements Steppable {
 		}	
 		
 		//Check, if our tmpMsg uses the FIPA-performative "REQUEST"
-		String req = "REQUEST";
-		if (tmpMsg != null && tmpMsg.getPerformative().equals(req) && blockVar == 0){
-			if (tmpMsg.getContent() == service){
-				//TODO: Antwortformat herausfinden
-				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.CONFIRM,"It's alright. I can do it.");
-				blockVar = 1;
-			}
-		}
-		//Check, if our tmpMsg uses the FIPA-performative "INFORM" --> means, we get our task
-		String inf = "INFORM";
-		if (tmpMsg != null && tmpMsg.getPerformative().equals(inf) && blockVar == 1){
+//		String req = "REQUEST";
+//		if (tmpMsg != null && tmpMsg.getPerformative().equals(req) && blockVar == 0){
+//			if (tmpMsg.getContent() == service){
+//				//TODO: Antwortformat herausfinden
+//				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.CONFIRM,"It's alright. I can do it.");
+//				blockVar = 1;
+//			} else {
+//				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.REFUSE,"Service not supported!");
+//			}
+//		}
+
+		//Check, if our tmpMsg uses the FIPA-performative "REQUEST" --> means, we get our task
+		String inf = "REQUEST";
+		if (tmpMsg != null && tmpMsg.getPerformative().equals(inf)){
+			
+			
 			String toSolve = tmpMsg.getContent();
 			
-			// Split our given numbers
-			String[] result = toSolve.split("\\.");
+			// Make an array out of our toSolve
+			String[] toSolveArray = toSolve.split("(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)");
 			
-			//Then we parse our String-numbers and get a and b (we are pretty close to solving this thingy!)
-			int a = Integer.parseInt(result[0]);
-			int b = Integer.parseInt(result[1]);
-			int solved = solve(a, b);
-			//SOLVED! Send the number back!!
-			messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.AGREE, ""+solved);
-			// Reset tmpMsg so we don't get another answer in the next step
-			tmpMsg = null;
-			blockVar = 0;
+			// Save operator
+			String operator = toSolveArray[1];
+			System.out.println("Operator: " + operator);
+			
+			// Split our given numbers from the operator
+			String[] result = toSolve.split("\\p{Punct}");
+			
+			boolean wrongService = false;
+			String s = null;
+			switch (operator){
+			case "*": 
+				s = "multiplication"; 
+				if (s.equals(service) == false) {
+					messageCenter.send(this.hashCode(), tmpMsg.getSender(), FIPA_Performative.REFUSE, "Service not supported!");
+					wrongService = true;
+					break;
+				}
+				break;
+			case "+":
+				s = "addition";
+				if (s.equals(service) == false) {
+					messageCenter.send(this.hashCode(), tmpMsg.getSender(), FIPA_Performative.REFUSE, "Service not supported!");
+					wrongService = true;
+					break;
+				}
+				break;
+			case "-":
+				s = "subtraction";
+				if (s.equals(service) == false) {
+					messageCenter.send(this.hashCode(), tmpMsg.getSender(), FIPA_Performative.REFUSE, "Service not supported!");
+					wrongService = true;
+					break;
+				}
+				break;
+			}
+			
+
+			if (wrongService == false) {
+				//Then we parse our String-numbers and get a and b (we are pretty close to solving this thingy!)
+				int a = Integer.parseInt(result[0]);
+				int b = Integer.parseInt(result[1]);
+				int solved = solve(a, b);
+				//SOLVED! Send the number back!!
+				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.AGREE, ""+solved);
+				// Reset tmpMsg so we don't get another answer in the next step
+				tmpMsg = null;
+				blockVar = 0;
+			}
+			
+		} else if (tmpMsg != null){
+			messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.NOT_UNDERSTOOD, "Message not understood.");
 		}
 	}
 	
