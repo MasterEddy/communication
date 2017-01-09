@@ -109,7 +109,7 @@ public class ConsumerAgent implements Steppable{
 			String searchs = "-";
 			int in = indexoflastOperator - 1;
 			while (in >= 0){
-				if (split[in] != "0" && split[in].equals(searchp) == false && split[in].equals(searchs) == false){
+				if (split[in] != "x" && split[in].equals(searchp) == false && split[in].equals(searchs) == false){
 				
 					multi[0] = Integer.parseInt(split[in]);
 					break;
@@ -118,7 +118,7 @@ public class ConsumerAgent implements Steppable{
 			}
 			in = indexoflastOperator + 1;
 			while (in < split.length){
-				if (split[in] != "0" && split[in].equals(searchp) == false && split[in].equals(searchs) == false){
+				if (split[in] != "x" && split[in].equals(searchp) == false && split[in].equals(searchs) == false){
 					multi[1] = Integer.parseInt(split[in]);
 					break;
 				}
@@ -148,7 +148,7 @@ public class ConsumerAgent implements Steppable{
 				
 			if (checkif == 1){
 				while (in >= 0){
-					if (split[in].equals("0") == false && split[in].equals("*") == false && split[in].equals("+") == false && split[in].equals("-") == false){
+					if (split[in].equals("x") == false && split[in].equals("*") == false && split[in].equals("+") == false && split[in].equals("-") == false){
 						valuesA[0] = Integer.parseInt(split[in]);
 						break;
 					}
@@ -156,7 +156,7 @@ public class ConsumerAgent implements Steppable{
 				}
 				in = indexoflastOperatorA + 1;
 				while (in < split.length){
-					if (split[in].equals("0") == false && split[in].equals("*") == false && split[in].equals("+") == false && split[in].equals("-") == false){
+					if (split[in].equals("x") == false && split[in].equals("*") == false && split[in].equals("+") == false && split[in].equals("-") == false){
 						valuesA[1] = Integer.parseInt(split[in]);
 						break;
 					}
@@ -187,7 +187,7 @@ public class ConsumerAgent implements Steppable{
 		
 		if (checkif == 1){
 			while (in >= 0){
-				if (split[in].equals("0") == false && split[in].equals("*") == false && split[in].equals("+") == false && split[in].equals("-") == false){
+				if (split[in].equals("x") == false && split[in].equals("*") == false && split[in].equals("+") == false && split[in].equals("-") == false){
 					valuesS[0] = Integer.parseInt(split[in]);
 					break;
 				}
@@ -195,7 +195,7 @@ public class ConsumerAgent implements Steppable{
 			}
 			in = indexoflastOperatorS + 1;
 			while (in < split.length){
-				if (split[in].equals("0") == false && split[in].equals("*") == false && split[in].equals("+") == false && split[in].equals("-") == false){
+				if (split[in].equals("x") == false && split[in].equals("*") == false && split[in].equals("+") == false && split[in].equals("-") == false){
 					valuesS[1] = Integer.parseInt(split[in]);
 					break;
 				}
@@ -211,8 +211,8 @@ public class ConsumerAgent implements Steppable{
 		//Because our therm in the Array is absolute nonsense, we have to set all numbers to zero, which are right of our result. 
 		int in = index + 1;
 		while (in < split.length){
-			if (split[in] != "0"){
-				split[in] = "0";
+			if (split[in] != "x"){
+				split[in] = "x";
 				break;
 			}
 			in++;
@@ -221,8 +221,8 @@ public class ConsumerAgent implements Steppable{
 		//Because our therm in the Array is absolute nonsense, we have to set all numbers to zero, which are right of our result.
 		in = index - 1;
 		while (in >= 0){
-			if (split[in] != "0"){
-				split[in] = "0";
+			if (split[in] != "x"){
+				split[in] = "x";
 				break;
 			}
 			in--;
@@ -411,10 +411,10 @@ public class ConsumerAgent implements Steppable{
 		int counter2 = 0;
 		int endResult = 0;
 		for (String s : split) {
-			if (s.matches("\\p{Punct}") == false && Integer.parseInt(s) > 0 && s.equals("*") == false && s.equals("+") == false && s.equals("-") == false) {
+			if (s.matches("\\p{Punct}") == false && s.equals("x") == false) {
 				counter++;
 				endResult = Integer.parseInt(s);
-			} else if (s.equals("*") == true || s.equals("+") == true || s.equals("-") == true){
+			} else if (s.matches("\\p{Punct}")){
 				counter2++;
 			}
 		}
