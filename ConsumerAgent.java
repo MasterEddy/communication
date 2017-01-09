@@ -311,6 +311,16 @@ public class ConsumerAgent implements Steppable{
 			//if our tmpMsg uses the FIPA-performative "CONFIRM", then send the task to the sender.
 			String conf = "CONFIRM";
 			if (tmpMsg != null && tmpMsg.getPerformative().equals(conf)){
+				
+				// Check if we get a negative intermediate result with a substraction
+				if (lastOperation.equals("sub")) {
+					if (multi[1] > multi[0]) {
+						System.out.println("### NEGATIVE RESULT IN SUBSTRACTION. SYSTEM QUITTING. ###");
+						System.out.println("### ONLY ENTER TERMS WITHOUT NEGATIVE INTERMEDIATE RESULTS ###");
+						System.exit(0);
+					}
+				}
+				
 				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.INFORM,""+ multi[0] + "." + multi[1]);
 				
 				blockVar = 2;
