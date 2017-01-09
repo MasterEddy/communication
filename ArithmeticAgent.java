@@ -10,6 +10,7 @@ public class ArithmeticAgent implements Steppable {
 	private YellowPages yellowPages;
 	private String service;
 	FIPA_Message tmpMsg;
+	private int blockVar = 0;
 	
 	public ArithmeticAgent(){	
 	}
@@ -39,15 +40,16 @@ public class ArithmeticAgent implements Steppable {
 		
 		//Check, if our tmpMsg uses the FIPA-performative "REQUEST"
 		String req = "REQUEST";
-		if (tmpMsg != null && tmpMsg.getPerformative().equals(req)){
+		if (tmpMsg != null && tmpMsg.getPerformative().equals(req) && blockVar == 0){
 			if (tmpMsg.getContent() == service){
 				//TODO: Antwortformat herausfinden
 				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.CONFIRM,"It's alright. I can do it.");
+				blockVar = 1;
 			}
 		}
 		//Check, if our tmpMsg uses the FIPA-performative "INFORM" --> means, we get our task
 		String inf = "INFORM";
-		if (tmpMsg != null && tmpMsg.getPerformative().equals(inf)){
+		if (tmpMsg != null && tmpMsg.getPerformative().equals(inf) && blockVar == 1){
 			String toSolve = tmpMsg.getContent();
 			
 			// Split our given numbers
@@ -61,6 +63,7 @@ public class ArithmeticAgent implements Steppable {
 			messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.INFORM, ""+solved);
 			// Reset tmpMsg so we don't get another answer in the next step
 			tmpMsg = null;
+			blockVar = 0;
 		}
 	}
 	
