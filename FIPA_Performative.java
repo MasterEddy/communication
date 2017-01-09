@@ -9,5 +9,5 @@ public enum FIPA_Performative {
 	
 	//@TODO: Ergänzen Sie die fehlenden Performatives.
 	
-	INFORM, REQUEST, CONFIRM
+	INFORM, REQUEST, CONFIRM, REFUSE, AGREE
 }

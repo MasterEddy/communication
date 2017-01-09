@@ -60,7 +60,7 @@ public class ArithmeticAgent implements Steppable {
 			int b = Integer.parseInt(result[1]);
 			int solved = solve(a, b);
 			//SOLVED! Send the number back!!
-			messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.INFORM, ""+solved);
+			messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.AGREE, ""+solved);
 			// Reset tmpMsg so we don't get another answer in the next step
 			tmpMsg = null;
 			blockVar = 0;
