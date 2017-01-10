@@ -14,7 +14,7 @@ public class ConsumerAgent implements Steppable{
 	
 	private YellowPages yellowPages;
 	private MessageCenter messageCenter;
-	private String therm;
+	private String term;
 	private String[] split;
 
 	FIPA_Message tmpMsg;
@@ -37,12 +37,12 @@ public class ConsumerAgent implements Steppable{
 	
 	public ConsumerAgent(){
 		//First we ask for something to solve. 
-		therm = JOptionPane.showInputDialog("Geben Sie hier ihren Therm ein. (Bitte nur '*','+','-' als Operatoren nutzen.)");
+		term = JOptionPane.showInputDialog("Geben Sie hier ihren Term ein. (Bitte nur '*','+','-' als Operatoren nutzen.)");
 		//Afterwards, we split the Sting into smallest pieces.
 		
 		// We split the math expression up into numbers and symbols (with the help of regEx)
 		// E.g. 1+2+3 will be converted to an Array like this: [1, +, 2, +, 3]
-		split = therm.split("(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)");
+		split = term.split("(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)");
 		
 		// Set up our lock boolean.
 		writeBlock = false;
@@ -51,7 +51,7 @@ public class ConsumerAgent implements Steppable{
 	/**
 	 * Searches for the multiplication symbol in our split array and, if one is found, puts the
 	 * previous value (must be a number!) into the array multi i.e. we have the numbers left and
-	 * right from the operator.
+	 * right from the operator. Also saves the index of the found operator.
 	 * 
 	 * @return An int array with the left and right numbers alongside the multiplication operator.
 	 */
@@ -96,6 +96,13 @@ public class ConsumerAgent implements Steppable{
 		return multi;
 	}
 	
+	/**
+	 * Searches for the addition symbol in our split array and, if one is found, puts the
+	 * previous value (must be a number!) into the array valuesA i.e. we have the numbers left and
+	 * right from the operator. Also saves the index of the found operator.
+	 * 
+	 * @return An int array with the left and right numbers alongside the addition operator.
+	 */
 	public int[] searchForAddition(){
 		String searchA = "+";
 		int [] valuesA = new int [2];
@@ -113,6 +120,7 @@ public class ConsumerAgent implements Steppable{
 			i++;
 		}
 				int in = indexoflastOperatorA - 1;
+				// If no symbol has been found, put in a high index so it doesn't interfere with future operations.
 				if (checkif == 0) indexoflastOperatorA = 2147483647;
 				
 			if (checkif == 1){
@@ -134,6 +142,14 @@ public class ConsumerAgent implements Steppable{
 			}
 		return valuesA;
 	}
+	
+	/**
+	 * Searches for the addition symbol in our split array and, if one is found, puts the
+	 * previous value (must be a number!) into the array valuesS i.e. we have the numbers left and
+	 * right from the operator. Also saves the index of the found operator.
+	 * 
+	 * @return An int array with the left and right numbers alongside the subtraction operator.
+	 */
 	public int[] searchForSubtraction(){
 		String searchS = "-";
 		int [] valuesS = new int [2];
@@ -152,6 +168,7 @@ public class ConsumerAgent implements Steppable{
 			i++;
 		}
 		int in = indexoflastOperatorS - 1;
+		// If no symbol has been found, put in a high index so it doesn't interfere with future operations.
 		if (checkif == 0) indexoflastOperatorS = 2147483647;
 		
 		if (checkif == 1){
@@ -175,9 +192,14 @@ public class ConsumerAgent implements Steppable{
 	}
 	
 	
+	/**
+	 * Replaces the both numbers left and right to our current operator with x's.
+	 * This indicates our algorithm that they have been processed.
+	 * 
+	 * @param index Index of our current operator.
+	 */
 	public void cleanArray (int index) {
-
-		//Because our therm in the Array is absolute nonsense, we have to set all numbers to zero, which are right of our result. 
+ 
 		int in = index + 1;
 		while (in < split.length){
 			if (split[in] != "x"){
@@ -187,7 +209,6 @@ public class ConsumerAgent implements Steppable{
 			in++;
 		}
 
-		//Because our therm in the Array is absolute nonsense, we have to set all numbers to zero, which are right of our result.
 		in = index - 1;
 		while (in >= 0){
 			if (split[in] != "x"){
@@ -281,7 +302,7 @@ public class ConsumerAgent implements Steppable{
 		//If there is no open request, we try to build up a new one
 		if (blockVar == 0 && !writeBlock){
 			
-			//Ask, if there is a multiplication task in our therm.
+			//Ask, if there is a multiplication task in our term.
 			multi = searchForMultiplication();
 			
 			//If the called method gives us other numbers than "0" we send a request to an multiplication agent.
