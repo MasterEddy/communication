@@ -30,6 +30,9 @@ public class ConsumerAgent implements Steppable{
 	private boolean writeBlock;
 	
 	ArrayList<ArithmeticAgent> agentListm;
+	ArrayList<ArithmeticAgent> agentListS;
+	ArrayList<ArithmeticAgent> agentListA;
+	
 	
 	//Dieser Agent soll vom Nutzer eine Rechenaufgabe abfragen, 
 	//diese anschlie�end zerlegen und die Teilaufgaben an 
@@ -62,8 +65,6 @@ public class ConsumerAgent implements Steppable{
 		int helper = indexoflastOperator;
 		while (i < split.length){
 			if (split[i].equals(searchm)){
-				//Wir haben eine Multiplikationsaufgabe!
-				//Wir holen uns also unsere Multiplikatoren
 				indexoflastOperator = i; //Save spot of the operator
 				break;
 			}
@@ -110,9 +111,6 @@ public class ConsumerAgent implements Steppable{
 		int checkif = 0;
 		while (i < split.length){
 			if (split[i].equals(searchA)){
-				//Wir haben eine Additions- oder Subtraktionsaufgabe!
-				//Wir holen uns also unsere Werte
-				//System.out.println("Found addition symbol: " + split[i]);
 				indexoflastOperatorA = i; //Save spot of the operator
 				checkif = 1;
 				break;
@@ -158,9 +156,6 @@ public class ConsumerAgent implements Steppable{
 		
 		while (i < split.length){
 			if (split[i].equals(searchS)){
-				//Wir haben eine Subtraktionsaufgabe!
-				//Wir holen uns also unsere Werte
-				//System.out.println("Found substraction symbol: " + split[i]);
 				indexoflastOperatorS = i; //Save spot of the operator
 				checkif = 1;
 				break;
@@ -219,44 +214,48 @@ public class ConsumerAgent implements Steppable{
 		}
 	}
 	
-	//Hierzu fragt er jedes mal, bevor er eine Teilaufgabe versendet bei 
-	//den YellowPages nach, welche Rechenagenten zur verf�gung stehen.
+	
+	/* (non-Javadoc)
+	 * @see sim.engine.Steppable#step(sim.engine.SimState)
+	 * Step method first checks for new messages. When starting the program, our block variable blockVar is set to 0. I.e.
+	 * the step method can open a new request for an algorithmic agent. After sending out a request, sending out requests
+	 * is blocked until the current operation has been processed (i.e. has been inserted in our array).
+	 * 
+	 * If there is only one number and no operator left, the program exits and gives out a result on the console.
+	 */
 	public void step(SimState state) {
 		
-		//Abfragen von Nachrichten analog zum Verhalten des Arithmetic Agent...
+		// Checking messages
 		while( messageCenter.messagesAvailable(this.hashCode()) ){
 			this.tmpMsg = messageCenter.getMessage(this.hashCode());
 			System.out.println("[MESSAGE] "+ this.hashCode() +" received a message " + tmpMsg.getContent() + 
 					" from " + tmpMsg.getSender()+" with FIPA_PERFORMATIVE "+tmpMsg.getPerformative());
 		}
 
-		//Beispielhafte Abfrage eines Rechenagenten, der multiplizieren kann.
-		//Zur�ckgegeben werden alle potenziellen Rechenagenten in einer ArrayList.
-		//Es soll dann zuf�llig ein Rechenagent ausgew�hlt werden.
+		// Get all the agents for all operations.
 		agentListm = this.yellowPages.getAgents("multiplication");
-		ArrayList<ArithmeticAgent> agentListS = this.yellowPages.getAgents("subtraction");
-		ArrayList<ArithmeticAgent> agentListA = this.yellowPages.getAgents("addition");
+		agentListS = this.yellowPages.getAgents("subtraction");
+		agentListA = this.yellowPages.getAgents("addition");
 		
 		
-		//The following section cares about the received tmpMsg and analyzes those messages. Also we are controlling the Agents answer-behavior.		
-		//this part checks, if we received a result from another Agent
-		//So we only start this procedure, if we know, that we got an open request.
+		// The following section cares about the received tmpMsg and analyzes those messages. Also we are controlling the Agents answer-behavior.		
+		// This part checks, if we received a result from another Agent.
+		// So we only start this procedure, if we know that we got an open request.
 		if (blockVar == 2 && writeBlock){
 
-			//Check, if the used performative of the message is an INFORM (that means, we get our results)
+			//Check, if the used performative of the message is an AGREE (that means, we get our results)
 			if (tmpMsg != null && tmpMsg.getPerformative().equals(FIPA_Performative.AGREE.toString())){
 				
-				//Now that we assume, that the message-content is our result, we start analyzing the content.
+				//Now that we assume, that the message-content is our result, we start inserting our result.
 				String result = tmpMsg.getContent();
 				
 				
+				// This next block checks which was the last operator and sets it to max int so it doesn't interfere with future operations.
 				searchForAddition();
 				searchForSubtraction();
-				
 				currentOperator = 0;
 				if (lastOperation == "multi") {
 					currentOperator = indexoflastOperator;
-//					indexoflastOperator = 2147483647;
 				}
 				if (lastOperation == "add") {
 					currentOperator = indexoflastOperatorA;
@@ -269,7 +268,7 @@ public class ConsumerAgent implements Steppable{
 				
 				//We overwrite the spot of the last operator, so we could get an Array-structure like: {1,*,3,15,5}
 				split[currentOperator] = result;
-//				System.out.println("Inserted result +++ " + Arrays.toString(split));
+				// Disable the write block and delete the message in this class.
 				writeBlock = false;
 				tmpMsg = null;
 				
@@ -277,27 +276,6 @@ public class ConsumerAgent implements Steppable{
 				blockVar = 0;
 			}	
 		}
-
-//		//If there is an open request, we check if our tmpMsg uses the performative Confirm, which means, that we can send our task to our arithmetic agent.
-//		if (blockVar == 1 && writeBlock){
-//			//if our tmpMsg uses the FIPA-performative "CONFIRM", then send the task to the sender.
-//			String conf = "CONFIRM";
-//			if (tmpMsg != null && tmpMsg.getPerformative().equals(conf)){
-//				
-//				// Check if we get a negative intermediate result with a substraction
-//				if (lastOperation.equals("sub")) {
-//					if (multi[1] > multi[0]) {
-//						System.out.println("### NEGATIVE RESULT IN SUBSTRACTION. SYSTEM QUITTING. ###");
-//						System.out.println("### ONLY ENTER TERMS WITHOUT NEGATIVE INTERMEDIATE RESULTS ###");
-//						System.exit(0);
-//					}
-//				}
-//				
-//				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.INFORM,""+ multi[0] + "." + multi[1]);
-//				
-//				blockVar = 2;
-//			}
-//		}
 		
 		//If there is no open request, we try to build up a new one
 		if (blockVar == 0 && !writeBlock){
@@ -305,18 +283,17 @@ public class ConsumerAgent implements Steppable{
 			//Ask, if there is a multiplication task in our term.
 			multi = searchForMultiplication();
 			
-			//If the called method gives us other numbers than "0" we send a request to an multiplication agent.
-			
 			if (indexoflastOperator < split.length && split[indexoflastOperator].equals("*") == true && writeBlock == false){
 				if(agentListm.size() > 0){
 					
-//					System.out.println("Sending multi request");
-					//Send a request to a serviceagent and save, that there is an open request.
+					//Send a request to a random service agent
 					int randomAgent = random.nextInt(agentListm.size());
-//					System.out.println("Multi Agent: " + randomAgent);
 					messageCenter.send(this.hashCode(), agentListm.get(randomAgent).hashCode(), FIPA_Performative.REQUEST,""+ multi[0] + "*" + multi[1]);
+					
+					// Finishing this block, so no other request goes out before processing the current one.
 					blockVar = 2;
 					lastOperation = "multi";
+					// Replace the processed numbers.
 					cleanArray(indexoflastOperator);
 					writeBlock = true;
 					
@@ -329,45 +306,49 @@ public class ConsumerAgent implements Steppable{
 				
 				// Set the indexes to a high number in case there is no subtraction or addition in the term (only relevant for the first round)
 				if (indexoflastOperatorA == 0) {
-					indexoflastOperatorA = 99;
+					indexoflastOperatorA = 2147483647;
 				} else if (indexoflastOperatorS == 0) {
-					indexoflastOperatorS = 99;
+					indexoflastOperatorS = 2147483647;
 				}
-				//First we look for possible tasks. Then we check, which is the first to execute (left before right rule)
+				// First we look for possible tasks. Then we check, which is the first to execute (left before right rule)
 				if (indexoflastOperatorA < indexoflastOperatorS && writeBlock == false){
-					//An addition has to be executed before a subtraction task.
+					// An addition has to be executed before a subtraction task.
 					if(agentListA.size() > 0){
 						multi = searchForAddition();
-//						System.out.println("Sending addition request");
-						//Send a request to a serviceagent and save, that there is an open request.
+						// Send a request to a random service agent
 						int randomAgent = random.nextInt(agentListA.size());
-//						System.out.println("Add Agent: " + randomAgent);
 						messageCenter.send(this.hashCode(), agentListA.get(randomAgent).hashCode(), FIPA_Performative.REQUEST,""+ multi[0] + "+" + multi[1]);
+						
+						// Finishing this block, so no other request goes out before processing the current one.
 						blockVar = 2;
 						lastOperation = "add";
+						// Replace the processed numbers.
 						cleanArray(indexoflastOperatorA);
 						writeBlock = true;
 					} else {
 						System.out.println("There is no registered addition-agent!");
 					}
 				} else if (indexoflastOperatorS < indexoflastOperatorA && writeBlock == false){
-					//Subtraction task is first one to be executed
+					// Subtraction task is first one to be executed
 					if(agentListS.size() > 0){
-//						System.out.println("Sending substraction request");
 						multi = searchForSubtraction();
-						//Send a REquest to a serviceagent and save, that there is an open request.
-						int randomAgent = random.nextInt(agentListS.size());		
 
-						// Check if we get a negative intermediate result with a substraction
-							if (multi[1] > multi[0]) {
-								System.out.println("### NEGATIVE RESULT IN SUBSTRACTION. SYSTEM QUITTING. ###");
-								System.out.println("### ONLY ENTER TERMS WITHOUT NEGATIVE INTERMEDIATE RESULTS ###");
-								System.exit(0);
-							}
-						
+						// Check if we get a negative intermediate result with a substraction.
+						// If so, exit the program.
+						if (multi[1] > multi[0]) {
+							System.out.println("### NEGATIVE RESULT IN SUBSTRACTION. SYSTEM QUITTING. ###");
+							System.out.println("### ONLY ENTER TERMS WITHOUT NEGATIVE INTERMEDIATE RESULTS ###");
+							System.exit(0);
+						}
+
+						// Send a request to a random service agent
+						int randomAgent = random.nextInt(agentListS.size());		
 						messageCenter.send(this.hashCode(), agentListS.get(randomAgent).hashCode(), FIPA_Performative.REQUEST,""+ multi[0] + "-" + multi[1]);
+						
+						// Finishing this block, so no other request goes out before processing the current one.
 						blockVar = 2;
 						lastOperation = "sub";
+						// Replace the processed numbers.
 						cleanArray(indexoflastOperatorS);
 						writeBlock = true;
 					} else {
@@ -375,17 +356,8 @@ public class ConsumerAgent implements Steppable{
 					}
 				}
 			}
-			
-				//Reset our index variables (in this case we set the to the upper bound of the INT type (because we will compare again, which comes first)
-				indexoflastOperatorA = 2147483647;
-				indexoflastOperatorS = 2147483647;
 		}
-		
-//		System.out.println("This step's round array is: " + Arrays.toString(split));
-//		if (messageCenter.messageList.isEmpty()) {
-//			System.exit(0);
-//		}
-		
+				
 		// Check if there is only 1 number left (i.e. our result)
 		int counter = 0;
 		int counter2 = 0;

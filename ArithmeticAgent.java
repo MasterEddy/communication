@@ -67,6 +67,9 @@ public class ArithmeticAgent implements Steppable {
 			// Split our given numbers from the operator
 			String[] result = toSolve.split("\\p{Punct}");
 			
+			
+			// Check if the received message matches the service provided by the agent.
+			// If not, send a REFUSE message back.
 			boolean wrongService = false;
 			String s = null;
 			switch (operator){
