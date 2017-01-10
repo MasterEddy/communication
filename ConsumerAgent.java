@@ -358,7 +358,7 @@ public class ConsumerAgent implements Steppable{
 			}
 		}
 				
-		// Check if there is only 1 number left (i.e. our result)
+		// Check if there is only 1 number left (i.e. our result) end the process and give out the result.
 		int counter = 0;
 		int counter2 = 0;
 		int endResult = 0;
@@ -376,11 +376,6 @@ public class ConsumerAgent implements Steppable{
 		}
 	}
 			
-		//Beispiel, wie eine Nachricht verschickt werden kann.
-		//messageCenter.send(int sender, int receiver, FIPA_Performative performative, String content)
-		//Achtung: Sender und Empf�nger werden durch den hashCode() angeben, einen 
-		//messageCenter.send( this.hashCode(), agentList.get(0).hashCode(), FIPA_Performative.INFORM, System.nanoTime()+"");
-		//messageCenter.send( this.hashCode(), agentList.get(1).hashCode(), FIPA_Performative.INFORM, System.nanoTime()+"");
 	public void setYellowPages(YellowPages yp) {
 		this.yellowPages = yp;
 	}

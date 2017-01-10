@@ -3,7 +3,7 @@ package sim.app.communication;
 public class AdditionAgent extends ArithmeticAgent {
 
 	//Dies ist ein beispielhafter Rechenagent.
-	//Er kann lediglich multiplizieren.
+	//Er kann lediglich addieren.
 	
 	public AdditionAgent(){
 	}

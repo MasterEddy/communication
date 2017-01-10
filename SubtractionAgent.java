@@ -3,7 +3,7 @@ package sim.app.communication;
 public class SubtractionAgent extends ArithmeticAgent {
 
 	//Dies ist ein beispielhafter Rechenagent.
-	//Er kann lediglich multiplizieren.
+	//Er kann lediglich subtrahieren.
 	
 	public SubtractionAgent(){
 	}

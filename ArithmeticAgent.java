@@ -15,18 +15,18 @@ public class ArithmeticAgent implements Steppable {
 	public ArithmeticAgent(){	
 	}
 
-	//Jeder ArithmeticAgent verf�gt �ber eine solve()-Funktion, 
-	//mit der er Rechenaufgaben eines spezifischen Typs l�sen kann.
+	//Jeder ArithmeticAgent verfügt über eine solve()-Funktion, 
+	//mit der er Rechenaufgaben eines spezifischen Typs lösen kann.
 	//Diese Funktion soll bei den Rechenagenten, 
-	//die von ArithmeticAgent erben �berschrieben werden!
+	//die von ArithmeticAgent erben überschrieben werden!
 	
-	//Um die Methode �berschrieben zu k�nnen, m�ssen wir sie auf public setzen.
+	//Um die Methode überschreiben zu können, müssen wir sie auf public setzen.
 	public int solve(int a, int b){
 		return 0;
 	}
 
-	//Bei jedem Step pr�ft jeder Rechenagent, ob neue Nachrichten verf�gbar sind.
-	//Falls dies der Fall ist, so lange immer eine Nachricht abgerufen, bis keine mehr verf�gbar sind.
+	//Bei jedem Step prüft jeder Rechenagent, ob neue Nachrichten verfügbar sind.
+	//Falls dies der Fall ist, so lange immer eine Nachricht abgerufen, bis keine mehr verfügbar sind.
 	public void step(SimState state) {
 		
 		while( messageCenter.messagesAvailable(this.hashCode()) ){
@@ -37,18 +37,6 @@ public class ArithmeticAgent implements Steppable {
 			System.out.println("[MESSAGE] "+ this.hashCode() +" received a message " + tmpMsg.getContent() + 
 					" from " + tmpMsg.getSender()+" with FIPA_PERFORMATIVE "+tmpMsg.getPerformative());
 		}	
-		
-		//Check, if our tmpMsg uses the FIPA-performative "REQUEST"
-//		String req = "REQUEST";
-//		if (tmpMsg != null && tmpMsg.getPerformative().equals(req) && blockVar == 0){
-//			if (tmpMsg.getContent() == service){
-//				//TODO: Antwortformat herausfinden
-//				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.CONFIRM,"It's alright. I can do it.");
-//				blockVar = 1;
-//			} else {
-//				messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.REFUSE,"Service not supported!");
-//			}
-//		}
 
 		//Check, if our tmpMsg uses the FIPA-performative "REQUEST" --> means, we get our task
 		String inf = "REQUEST";
@@ -112,6 +100,7 @@ public class ArithmeticAgent implements Steppable {
 				blockVar = 0;
 			}
 			
+		// If the performative is not a request -> send not_understood.
 		} else if (tmpMsg != null){
 			messageCenter.send( this.hashCode(), tmpMsg.getSender(), FIPA_Performative.NOT_UNDERSTOOD, "Message not understood.");
 		}
@@ -131,6 +120,10 @@ public class ArithmeticAgent implements Steppable {
 		this.yellowPages = yellowPages;
 	}
 	
+	/**
+	 * Are you still online?
+	 * @return true, hopefully in time...
+	 */
 	public boolean stillOnline() {
 		return true;
 	}

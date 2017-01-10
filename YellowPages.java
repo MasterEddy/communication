@@ -45,7 +45,7 @@ public class YellowPages implements Steppable{
 		return tmp;
 	}
 	
-	//Hilfsklasse, um die Tupel <Agent, Service> abspeichern zu k�nnen.
+	//Hilfsklasse, um die Tupel <Agent, Service> abspeichern zu können.
 	public class AgentService{
 		private ArithmeticAgent agent;
 		private String service; 
@@ -65,8 +65,8 @@ public class YellowPages implements Steppable{
 	}
 
 	public void step(SimState state) {
-		//TODO: Hier muss das Ping-Pong-Verhalten implementiert werden.
-		
+
+		// Check if the agent answers. If not, unregister it.
 		for (AgentService as : agentList) {
 			ArithmeticAgent arithmeticAgent = as.getAgent();
 			if (!arithmeticAgent.stillOnline()) {
