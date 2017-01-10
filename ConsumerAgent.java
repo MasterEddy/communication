@@ -1,6 +1,5 @@
 package sim.app.communication;
 
-import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,9 +15,7 @@ public class ConsumerAgent implements Steppable{
 	private YellowPages yellowPages;
 	private MessageCenter messageCenter;
 	private String therm;
-	private String [] thermArr;
 	private String[] split;
-	private String[] onlyOperators;
 
 	FIPA_Message tmpMsg;
 	private int [] multi;
@@ -32,11 +29,6 @@ public class ConsumerAgent implements Steppable{
 	private int currentOperator;
 	private boolean writeBlock;
 	
-//	private int indexOfOperator;
-	private int resultOfCompleteCalculation = 0;
-	private int countOperators = 0;
-//	private boolean calcDone = false;
-	
 	ArrayList<ArithmeticAgent> agentListm;
 	
 	//Dieser Agent soll vom Nutzer eine Rechenaufgabe abfragen, 
@@ -47,23 +39,22 @@ public class ConsumerAgent implements Steppable{
 		//First we ask for something to solve. 
 		therm = JOptionPane.showInputDialog("Geben Sie hier ihren Therm ein. (Bitte nur '*','+','-' als Operatoren nutzen.)");
 		//Afterwards, we split the Sting into smallest pieces.
-		thermArr = therm.split("");
 		
 		// We split the math expression up into numbers and symbols (with the help of regEx)
 		// E.g. 1+2+3 will be converted to an Array like this: [1, +, 2, +, 3]
 		split = therm.split("(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)");
 		
-		// Count number of operators so we now how many operations we have to deal with
-		for (int i = 0; i < split.length; i++) {
-			if (split[i].equals("+") | split[i].equals("-") | split[i].equals("*")) {
-				countOperators++;
-			}
-		}
-		
+		// Set up our lock boolean.
 		writeBlock = false;
 	}
 
-	
+	/**
+	 * Searches for the multiplication symbol in our split array and, if one is found, puts the
+	 * previous value (must be a number!) into the array multi i.e. we have the numbers left and
+	 * right from the operator.
+	 * 
+	 * @return An int array with the left and right numbers alongside the multiplication operator.
+	 */
 	public int[] searchForMultiplication(){
 		String searchm = "*";
 		int [] multi = new int [2];
